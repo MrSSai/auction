@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.auction.dao.WareDao">
+    <resultMap id="BaseResultMap" type="com.auction.model.Ware">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="uuid" property="uuid" jdbcType="VARCHAR"/>
+        <result column="createtime" property="createtime" jdbcType="TIMESTAMP"/>
+        <result column="create" property="create" jdbcType="VARCHAR"/>
+        <result column="identifier" property="identifier" jdbcType="VARCHAR"/>
+        <result column="commodity" property="commodity" jdbcType="VARCHAR"/>
+        <result column="category" property="category" jdbcType="INTEGER"/>
+        <result column="image" property="image" jdbcType="VARCHAR"/>
+        <result column="intro" property="intro" jdbcType="VARCHAR"/>
+        <result column="price" property="price" jdbcType="FLOAT"/>
+        <result column="transaction" property="transaction" jdbcType="FLOAT"/>
+        <result column="state" property="state" jdbcType="INTEGER"/>
+        <result column="buyer_buff" property="buyerBuff" jdbcType="VARCHAR"/>
+        <result column="buy_uuid" property="buyUuid" jdbcType="VARCHAR"/>
+        <result column="buy_mobile" property="buyMobile" jdbcType="VARCHAR"/>
+        <result column="endtime" property="endtime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="tableName">
+        org_ware
+    </sql>
+    <sql id="field">
+        id, uuid, createtime, `create`, identifier, commodity, category, image, intro, price, `transaction`,
+        state, buyer_buff, buy_uuid, buy_mobile, endtime
+    </sql>
+    <sql id="values">
+        #{id,jdbcType=BIGINT}, #{uuid,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP},
+        #{create,jdbcType=VARCHAR}, #{identifier,jdbcType=VARCHAR}, #{commodity,jdbcType=VARCHAR},
+        #{category,jdbcType=INTEGER}, #{image,jdbcType=VARCHAR}, #{intro,jdbcType=VARCHAR}, #{price,jdbcType=FLOAT},
+        #{transaction,jdbcType=FLOAT}, #{state,jdbcType=INTEGER},#{buyerBuff,jdbcType=VARCHAR} ,#{buyUuid,jdbcType=VARCHAR},
+        #{buyMobile,jdbcType=VARCHAR}, #{endtime,jdbcType=TIMESTAMP}
+    </sql>
+    <insert id="insert" parameterType="com.auction.model.Ware" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+        <include refid="field"/>
+        )
+        VALUES
+        (
+        <include refid="values"/>
+        )
+    </insert>
+    <select id="getAllWare" resultMap="BaseResultMap">
+        SELECT
+        <include refid="field"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+        <if test="pd.create != null">
+            `create` = #{pd.create}
+        </if>
+        <if test="pd.uuid != null">
+            uuid = #{pd.uuid}
+        </if>
+    </select>
+    <select id="getAllWareInfo" resultMap="BaseResultMap">
+        SELECT
+        <include refid="field"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+        state = 0
+    </select>
+    <update id="updateTransaction">
+        UPDATE
+        <include refid="tableName"/>
+        SET
+        `transaction` = #{pd.transaction}, buy_uuid = #{pd.buy_uuid}, buyer_buff = #{pd.buyer_buff}, buy_mobile=#{pd.buy_mobile}
+        WHERE
+        uuid = #{pd.uuid}
+    </update>
+    <select id="getMyWare" resultMap="BaseResultMap">
+        SELECT
+        <include refid="field"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+        buyer_buff LIKE concat(concat('%',#{pd.buy_uuid}),'%')
+    </select>
+</mapper>
